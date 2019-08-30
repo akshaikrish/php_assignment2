@@ -7,16 +7,13 @@
     <title>Stream Movies</title>
 </head>
 <body>
-    <a href="addmovie.php">Add Movie</a>
+    <a href="addmovie.php">Add Movie</a><br>
+    <div id="addactor">
+        <button id="actor-btn" onclick="addactor()">Add Actor</button>
+    </div>
     
     <?php
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "movies";
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
+        include "config.php";
         // Check connection
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
