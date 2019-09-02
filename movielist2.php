@@ -25,7 +25,7 @@ if ($result->num_rows > 0) {
             include "displayactor.php";
             echo "<br>Rating : " . $row["Rating"]. "<br>Genres : ";
             include "displaygenre.php";
-            "<br><br><button type=\"button\" value='".$row['m_id']."' onclick=\"edit('".$row['m_id']."')\">Edit</button>
+            echo "<br><br><button type=\"button\" value='".$row['m_id']."' onclick=\"edit('".$row['m_id']."')\">Edit</button>
             &nbsp;<button id='".$row['m_id']."' type=\"button\" class='delete'>Delete</button>";
             ?></div>
         </div><?php
