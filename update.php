@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 // $password = "user01";
-$dbname = "movies";
+$dbname = "moviedb";
 
 $conn = new mysqli($servername, $username, "", $dbname);
 if ($conn->connect_error) {
@@ -16,9 +16,11 @@ $Genres=$_POST["Genres"];
 $Thumbnail=$_POST["Thumbnail"];
 $Id=$_POST["Id"];
 
-$sql="UPDATE movielist set Movie='$Movie', Starring='$Starring', Rating='$Rating', Years='$Year',
- Genres='$Genres', Thumbnail='$Thumbnail' where Id='$Id'";
-if($conn->query($sql)===TRUE){
+$sql="UPDATE movies set Movie='$Movie', Rating='$Rating', Years='$Year',
+  Thumbnail='$Thumbnail' where m_id='$Id'";
+$sql2="UPDATE actors set actorname='$Starring' where movie='$Movie'";
+$sql3="UPDATE genres set genre='$Genres' where movie='$Movie'";  
+if(($conn->query($sql)===TRUE)&&($conn->query($sql2)===TRUE)&&($conn->query($sql3)===TRUE)){
     echo "Movie edited successfully";
     exit;
 } else {
