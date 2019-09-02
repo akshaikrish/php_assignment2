@@ -67,28 +67,27 @@ function test_input($data) {
 Movie : <input type="varchar" name="moviename" placeholder="Enter movie name" required="required">
         <span class="error">*<?php echo $nameErr;?></span><br><br>
 
-Actors: <?php
+Actors: <?php 
           $servername = "localhost";
           $username = "root";
           $password = "";
           $dbname = "movies";
-  
-          // Create connection
+
           $conn = new mysqli($servername, $username, $password, $dbname);
           // Check connection
           if ($conn->connect_error) {
               die("Connection failed: " . $conn->connect_error);
-          } 
-  
-          $sql = "SELECT Names FROM actors";
-          $result = $conn->query($sql);
-
-          echo "<select name='starring[]' multiple>";
-          while ($row = $result->fetch_assoc()) {
-              echo "<option value='" . $row['Names'] ."'>" . $row['Names'] ."</option>";
           }
-          echo "</select>";
-          $conn->close();?><br><br>
+          $sql = "SELECT Names FROM actors";
+          $result = $conn->query($sql);?>
+          <select name="actor[]" multiple required>
+            <?php
+            while ($rows = $result->fetch_assoc()) {
+                $actor = $rows['Names'];
+                echo "<option value='$actor'>$actor</option>";
+            }
+            ?>
+        </select><br>
 
 Rating: <input type="int" placeholder="Enter movie rating" name="rating" id="rate" required="required">
         <span id="error">*<?php echo $ratingErr;?></span><br><br>
@@ -100,19 +99,19 @@ Genres: <?php
           $servername = "localhost";
           $username = "root";
           $password = "";
-          $dbname = "moviedb";
+          $dbname = "movies";
 
           $conn = new mysqli($servername, $username, $password, $dbname);
           // Check connection
           if ($conn->connect_error) {
               die("Connection failed: " . $conn->connect_error);
           }
-          $sql = "SELECT genre FROM genres";
+          $sql = "SELECT Genre FROM genres";
           $result = $conn->query($sql);?>
           <select name="genre[]" multiple required>
             <?php
             while ($rows = $result->fetch_assoc()) {
-                $genre = $rows['genre'];
+                $genre = $rows['Genre'];
                 echo "<option value='$genre'>$genre</option>";
             }
             ?>
@@ -134,41 +133,43 @@ if($_POST){
   $password = "";
   $dbname = "moviedb";
 
-  $conn = new mysqli($servername, $username, $password, $dbname);
+  $conn = mysqli_connect($servername, $username, $password, $dbname);
   // Check connection
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
+  if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
   
   $name1= mysqli_real_escape_string($conn, $name);
-  $starring1= mysqli_real_escape_string($conn, $starring);
+  // $starring1= mysqli_real_escape_string($conn, $starring);
   $rating1= mysqli_real_escape_string($conn, $rating);
   $year1=  mysqli_real_escape_string($conn, $year);
-  $genres1=  mysqli_real_escape_string($conn, $genres);
+  // $genres1=  mysqli_real_escape_string($conn, $genres);
   $thumbnail1=  mysqli_real_escape_string($conn, $thumbnail);
-
+  // echo $_POST['genre'][0];
+  // echo $_POST['genre'][1];
   $sql = "INSERT INTO movies (Movie, Rating, Years, Thumbnail )
   VALUES ('$name1',  '$rating1', '$year1', '$thumbnail1')";
-
-  $sql2= "SELECT m_id FROM movies where Movie='$name1'";
-  foreach ($_POST['genre'] as $selectedgenre) {
-    
-    $sql = "INSERT INTO genres(movieid, thevalue, selector ) VALUES ('$id', '$selectedgenre', 'genre')";
-  if($conn->query($sql) === TRUE){
+  // echo $name1;
+  foreach ($_POST['actor'] as $selectedactor) {
+    $sql2 = "INSERT INTO actors(actorname, movie) VALUES ('$selectedactor', '$name1')";
+    if(mysqli_query($conn, $sql2)){
       echo "Records inserted successfully.";
-  } else{
-      echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
+    } else{
+      echo "ERROR: Could not able to execute $sql2. " . $mysqli->error;
   }
   }
-  $sql = "INSERT INTO movielist (Movie, Starring, Rating, Years, Genres, thumbnail )
-  VALUES ('$name1', '$starring1', '$rating1', '$year1', '$genres1', '$thumbnail1')";
-  if ($conn->query($sql) === TRUE) {
+  foreach ($_POST['genre'] as $selectedgenre) {
+    $sql3 = "INSERT INTO genres(genre, movie) VALUES ('$selectedgenre', '$name1')";
+    if(mysqli_query($conn, $sql3)){
+      echo "Records inserted successfully.";
       header("Location: http://localhost/phpproject/assignment/php_assignment/assignment2/home.php");
-  } else {
-      echo "Error: " . $sql . "<br>" . $conn->error;
-  }  
-  $conn->close();
+  } else{
+      echo "ERROR: Could not able to execute $sql3. " . $mysqli->error;
+  }
+  }
+
+  mysqli_close($conn);
 }
 ?> 
 <script src="formvalidation.js"></script>

@@ -3,5 +3,5 @@ $(document).ready(function(){
     
 });
  var home=()=>{
-    $("#movielist").load("movielist.php");
+    $("#movielist").load("movielist2.php");
 }
