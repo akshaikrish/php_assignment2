@@ -19,17 +19,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = test_input($_POST["moviename"]);
    }
 
- if (empty($_POST["starring"])) {
-    $starringErr = "Please enter atleast an actor name";
-  } else {
-    $i=0;
-    foreach ($_POST["starring"] as $selected){
-      $starring[$i] = test_input($selected);
-      if (!preg_match("/^[a-zA-Z, ]*$/",$starring[$i])) {
-          $starringErr = "Only letters and white space allowed";
-      }}
-    $i+=1;
-    }
+//  if (empty($_POST["starring"])) {
+//     $starringErr = "Please enter atleast an actor name";
+//   } else {
+//     $i=0;
+//     foreach ($_POST["starring"] as $selected){
+//       $starring[$i] = test_input($selected);
+//       if (!preg_match("/^[a-zA-Z, ]*$/",$starring[$i])) {
+//           $starringErr = "Only letters and white space allowed";
+//       }}
+//     $i+=1;
+//     }
 
     if (empty($_POST["rating"])) {
     $ratingErr = "Enter rating";
@@ -41,11 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   } else {
     $year = test_input($_POST["year"]);
    }
-   if (empty($_POST["genres"])) {
-    $genresErr = "Genre is required";
-  } else {
-    $genres = test_input($_POST["genres"]);
-   }
+  //  if (empty($_POST["genres"])) {
+  //   $genresErr = "Genre is required";
+  // } else {
+  //   $genres = test_input($_POST["genres"]);
+  //  }
    if (empty($_POST["thumbnail"])) {
     $thumbnailErr = "Thumbnail URL is required";
   } else {
@@ -96,8 +96,28 @@ Rating: <input type="int" placeholder="Enter movie rating" name="rating" id="rat
 Year: <input type="year" placeholder="Enter release year" name="year" required="required">
         <span class="error">*<?php echo $yearErr;?></span><br><br>
 
-Genres: <input type="varchar" placeholder="Enter genres"name="genres" required="required">
-        <span class="error">*<?php echo $genresErr;?></span><br><br>
+Genres: <?php 
+          $servername = "localhost";
+          $username = "root";
+          $password = "";
+          $dbname = "moviedb";
+
+          $conn = new mysqli($servername, $username, $password, $dbname);
+          // Check connection
+          if ($conn->connect_error) {
+              die("Connection failed: " . $conn->connect_error);
+          }
+          $sql = "SELECT genre FROM genres";
+          $result = $conn->query($sql);?>
+          <select name="genre[]" multiple required>
+            <?php
+            while ($rows = $result->fetch_assoc()) {
+                $genre = $rows['genre'];
+                echo "<option value='$genre'>$genre</option>";
+            }
+            ?>
+        </select><br>
+        
 
 Thumbnail: <input type="varchar" placeholder="Enter thumbnail url" name="thumbnail">
         <span class="error">*<?php echo $thumbnailErr;?></span><br><br>
@@ -109,30 +129,46 @@ Thumbnail: <input type="varchar" placeholder="Enter thumbnail url" name="thumbna
 <?php
 
 if($_POST){
-$servername = "localhost";
-$username = "root";
-// $password = "user01";
-$dbname = "movies";
+  $servername = "localhost";
+  $username = "root";
+  $password = "";
+  $dbname = "moviedb";
 
-$conn = new mysqli($servername, $username, "", $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
- 
-$name1= mysqli_real_escape_string($conn, $name);
-$starring1= mysqli_real_escape_string($conn, $starring);
-$rating1= mysqli_real_escape_string($conn, $rating);
-$year1=  mysqli_real_escape_string($conn, $year);
-$genres1=  mysqli_real_escape_string($conn, $genres);
-$thumbnail1=  mysqli_real_escape_string($conn, $thumbnail);
-$sql = "INSERT INTO movielist (Movie, Starring, Rating, Years, Genres, thumbnail )
-VALUES ('$name1', '$starring1', '$rating1', '$year1', '$genres1', '$thumbnail1')";
-if ($conn->query($sql) === TRUE) {
-     header("Location: http://localhost/phpproject/assignment/php_assignment/assignment2/home.php");
-} else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
-}  
-$conn->close();
+  $conn = new mysqli($servername, $username, $password, $dbname);
+  // Check connection
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+
+  
+  $name1= mysqli_real_escape_string($conn, $name);
+  $starring1= mysqli_real_escape_string($conn, $starring);
+  $rating1= mysqli_real_escape_string($conn, $rating);
+  $year1=  mysqli_real_escape_string($conn, $year);
+  $genres1=  mysqli_real_escape_string($conn, $genres);
+  $thumbnail1=  mysqli_real_escape_string($conn, $thumbnail);
+
+  $sql = "INSERT INTO movies (Movie, Rating, Years, Thumbnail )
+  VALUES ('$name1',  '$rating1', '$year1', '$thumbnail1')";
+
+  $sql2= "SELECT m_id FROM movies where Movie='$name1'";
+  foreach ($_POST['genre'] as $selectedgenre) {
+    
+    $sql = "INSERT INTO genres(movieid, thevalue, selector ) VALUES ('$id', '$selectedgenre', 'genre')";
+  if($conn->query($sql) === TRUE){
+      echo "Records inserted successfully.";
+  } else{
+      echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
+  }
+  }
+  $sql = "INSERT INTO movielist (Movie, Starring, Rating, Years, Genres, thumbnail )
+  VALUES ('$name1', '$starring1', '$rating1', '$year1', '$genres1', '$thumbnail1')";
+  if ($conn->query($sql) === TRUE) {
+      header("Location: http://localhost/phpproject/assignment/php_assignment/assignment2/home.php");
+  } else {
+      echo "Error: " . $sql . "<br>" . $conn->error;
+  }  
+  $conn->close();
 }
 ?> 
 <script src="formvalidation.js"></script>

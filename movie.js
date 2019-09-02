@@ -1,7 +1,7 @@
 var edit=(obj)=>{
     $("#D"+obj).html("  Movie : <input type=\"varchar\" name=\"moviename\" id=\"Movie\" placeholder=\"Enter movie name\"></input><br>Actors: <input type=\"varchar\" name=\"starring\" id=\"Starring\" placeholder=\"Enter actors starring\"></input><br>Rating: <input type=\"int\" placeholder=\"Enter movie rating\" name=\"rating\" id=\"Rating\"></input><br>Year: <input type=\"year\" placeholder=\"Enter release year\" name=\"year\" id=\"Year\"></input><br>Genres: <input type=\"varchar\" placeholder=\"Enter genres\"name=\"genres\" id=\"Genres\"></input><br>Thumbnail: <input type=\"varchar\" placeholder=\"Enter thumbnail url\" name=\"thumbnail\" id=\"Thumbnail\"></input><br><input type=\"submit\" name=\"submit\" id=\"update\" value=\"Submit\" onclick=\"update("+obj+")\"></input>");
 }
-{/* */}
+
 // edit movie
 var update=(Id)=>{
     var Movie=$("#Movie").val();
@@ -27,47 +27,12 @@ var update=(Id)=>{
             },
             success:function(response){
                 alert(response);
-                // $(this).parents(".show").animate();
-                location.reload();
-                // $(this).parents("#"+Id).animate({ backgroundColor: "#003" }, "slow")
-                // .animate({ opacity: "hide" }, "slow");
-                // setInterval(function(){
-                //     $("#"+Id).load("#"+Id)
-                //     }, 1000);
-
-                
+                home();  
             }
         });
-        $(this).parents("#"+Id).animate({ backgroundColor: "#003" }, "slow")
-        .animate({ opacity: "hide" }, "slow");
     }
+    
 }
-
-
-// delete 
-$(function() {
-    $(".delete").click(function(){
-    var element = $(this);
-    var del_id = element.attr("id");
-    var info = 'id=' + del_id;
-    if(confirm("Are you sure you want to delete this?"))
-    {
-     $.ajax({
-       type: "POST",
-       url: "delete.php",
-       data: info,
-       success: function(){
-            $(this).parents(".show").animate({ backgroundColor: "#003" }, "slow")
-            .animate({ opacity: "hide" }, "slow");
-     }
-    });
-      $(this).parents(".show").animate({ backgroundColor: "#003" }, "slow")
-      .animate({ opacity: "hide" }, "slow");
-     }
-    return false;
-    });
-    });
-
 
 // add actor
 var addactor=()=>{
@@ -82,12 +47,10 @@ function actor_update(){
         url: "addactor.php",
         data: {actor:actor},
         success: function(){
-             alert(actor+" added.");
+            alert(actor+" added.");
+            home();
              
       }
      });
-    // $("#actor").hide();
-    // $("#add_actor").hide();
-    $("#addactor").show();
-    $("#actor-btn").show();
+    
 }
